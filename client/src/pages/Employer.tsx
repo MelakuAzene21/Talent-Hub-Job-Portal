@@ -50,10 +50,6 @@ export default function Employer() {
     return applicationsData?.filter(app => app.jobId === jobId).length || 0;
   };
 
-  const getApplicantsForJob = (jobId: string) => {
-    return applicationsData?.filter(app => app.jobId === jobId) || [];
-  };
-
   if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
     return <Navigate to="/" replace />;
   }
