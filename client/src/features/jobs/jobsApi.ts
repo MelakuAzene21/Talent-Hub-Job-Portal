@@ -8,14 +8,35 @@ export const jobsApi = api.injectEndpoints({
     }),
     createJob: builder.mutation<
       any,
-      { title: string; description: string; skills?: string[] }
+      { 
+        title: string; 
+        company: string;
+        location: string;
+        jobType: string;
+        minSalary: number;
+        maxSalary: number;
+        description: string; 
+        requirements: string[];
+        skills?: string[] 
+      }
     >({
       query: (body) => ({ url: "/jobs", method: "POST", body }),
       invalidatesTags: ["Jobs"],
     }),
     updateJob: builder.mutation<
       any,
-      { id: string; title: string; description: string; skills?: string[] }
+      { 
+        id: string; 
+        title: string; 
+        company: string;
+        location: string;
+        jobType: string;
+        minSalary: number;
+        maxSalary: number;
+        description: string; 
+        requirements: string[];
+        skills?: string[] 
+      }
     >({
       query: ({ id, ...body }) => ({ url: `/jobs/${id}`, method: "PUT", body }),
       invalidatesTags: ["Jobs"],
