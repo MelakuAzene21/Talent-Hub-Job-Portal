@@ -9,7 +9,7 @@ export default function Landing() {
           <h1 className="text-4xl md:text-6xl font-bold text-zinc-900 dark:text-white mb-6">
             Find Your Dream Job with{" "}
             <span className="text-primary">TalentHub</span>
-          </h1>
+        </h1>
           <p className="text-xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-3xl mx-auto">
             Connect talented developers with innovative companies. Whether you're looking for your next opportunity or seeking top talent, TalentHub makes it simple.
           </p>
@@ -71,11 +71,11 @@ export default function Landing() {
             </h2>
             <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
               Discover exciting opportunities from top companies. Find your perfect role and take the next step in your career.
-            </p>
-          </div>
-          <JobList />
+        </p>
+      </div>
+      <JobList />
         </div>
-      </section>
+    </section>
     </div>
   );
 }
