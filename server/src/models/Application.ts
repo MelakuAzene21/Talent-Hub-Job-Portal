@@ -1,22 +1,28 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
+
 export interface IApplication extends Document {
   jobId: Types.ObjectId;
-  userId: Types.ObjectId;
-  status: "applied" | "shortlisted" | "rejected";
-  resumeUrl?: string;
+  applicantId: Types.ObjectId;
+  coverLetter: string;
+  resumeUrl: string;
+  status: "applied" | "shortlisted" | "rejected" | "hired";
+  appliedAt: Date;
 }
-const appSchema = new Schema<IApplication>(
+
+const applicationSchema = new Schema<IApplication>(
   {
     jobId: { type: Schema.Types.ObjectId, ref: "Job", required: true },
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    status: {
-      type: String,
-      enum: ["applied", "shortlisted", "rejected"],
-      default: "applied",
+    applicantId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    coverLetter: { type: String, required: true },
+    resumeUrl: { type: String, required: true },
+    status: { 
+      type: String, 
+      enum: ["applied", "shortlisted", "rejected", "hired"], 
+      default: "applied" 
     },
-    resumeUrl: { type: String },
+    appliedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
-appSchema.index({ jobId: 1, userId: 1 }, { unique: true }); // prevent duplicates
-export default mongoose.model<IApplication>("Application", appSchema);
+
+export default model<IApplication>("Application", applicationSchema);
