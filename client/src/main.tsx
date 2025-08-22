@@ -7,6 +7,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
 import Landing from "./pages/Landing";
 import Jobs from "./pages/Jobs";
+import JobDetails from "./pages/JobDetails";
+import ApplicationForm from "./components/Forms/ApplicationForm";
+import About from "./pages/About";
 import Employer from "./pages/Employer";
 import Applicant from "./pages/Applicant";
 import Admin from "./pages/Admin";
@@ -19,6 +22,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Landing /> },
       { path: "jobs", element: <Jobs /> },
+      { path: "jobs/:id", element: <JobDetails /> },
+      { path: "jobs/:id/apply", element: <ApplicationForm /> },
+      { path: "about", element: <About /> },
       { path: "employer", element: <Employer /> },
       { path: "applicant", element: <Applicant /> },
       { path: "admin", element: <Admin /> },
