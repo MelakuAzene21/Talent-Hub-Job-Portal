@@ -1,0 +1,34 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+import "./styles/tailwind.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import App from "./App";
+import Landing from "./pages/Landing";
+import Jobs from "./pages/Jobs";
+import Employer from "./pages/Employer";
+import Applicant from "./pages/Applicant";
+import Admin from "./pages/Admin";
+import Auth from "./pages/Auth";
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      { index: true, element: <Landing /> },
+      { path: "jobs", element: <Jobs /> },
+      { path: "employer", element: <Employer /> },
+      { path: "applicant", element: <Applicant /> },
+      { path: "admin", element: <Admin /> },
+      { path: "auth", element: <Auth /> },
+    ],
+  },
+]);
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </React.StrictMode>
+);
