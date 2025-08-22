@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import { useAuthEndpoints } from "./LoginForm";
@@ -11,12 +12,27 @@ export default function RegisterForm() {
   const { useRegisterMutation } = useAuthEndpoints();
   const [registerUser] = useRegisterMutation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: any) => {
     try {
       const res = await registerUser(data).unwrap();
       dispatch(setCredentials(res));
+      
+      // Redirect based on role
+      switch (res.user.role) {
+        case 'employer':
+          navigate('/employer');
+          break;
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'applicant':
+        default:
+          navigate('/'); // Stay on home page for applicants
+          break;
+      }
     } catch (error) {
       console.error("Registration failed:", error);
     }

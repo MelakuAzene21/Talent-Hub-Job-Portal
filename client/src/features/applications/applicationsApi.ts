@@ -11,7 +11,22 @@ export const applicationsApi = api.injectEndpoints({
     adminStats: builder.query<any, void>({
       query: () => ({ url: "/applications/admin/stats/all" }),
     }),
+    getApplicantsForJob: builder.query<any[], string>({
+      query: (jobId) => `/applications/job/${jobId}`,
+    }),
+    getAdminDashboard: builder.query<any, void>({
+      query: () => "/applications/admin/dashboard",
+    }),
+    updateStatus: builder.mutation<any, { id: string; status: string }>({
+      query: ({ id, status }) => ({
+        url: `/applications/${id}/status`,
+        method: "PUT",
+        body: { status },
+      }),
+      invalidatesTags: ["Applications"],
+    }),
   }),
 });
-export const { useApplyMutation, useMyApplicationsQuery, useAdminStatsQuery } =
+
+export const { useApplyMutation, useMyApplicationsQuery, useAdminStatsQuery ,useGetAdminDashboardQuery ,useGetApplicantsForJobQuery ,useUpdateStatusMutation} =
   applicationsApi;

@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../utils/helpers";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
 import { useEffect, useState } from "react";
 
 export default function Header() {
-  const { user } = useAppSelector((s) => s.auth as any);
+  const { user } = useSelector((state: any) => state.auth);
   const [dark, setDark] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -13,6 +13,11 @@ export default function Header() {
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
 
   return (
     <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
@@ -37,12 +42,30 @@ export default function Header() {
             >
               Find Jobs
             </Link>
-            <Link 
-              to="/employer" 
-              className="text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-primary transition-colors"
-            >
-              For Employers
-            </Link>
+            {user?.role === 'employer' && (
+              <Link 
+                to="/employer" 
+                className="text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-primary transition-colors"
+              >
+                Employer Dashboard
+              </Link>
+            )}
+            {user?.role === 'applicant' && (
+              <Link 
+                to="/applicant" 
+                className="text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-primary transition-colors"
+              >
+                My Dashboard
+              </Link>
+            )}
+            {user?.role === 'admin' && (
+              <Link 
+                to="/admin" 
+                className="text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-primary transition-colors"
+              >
+                Admin Dashboard
+              </Link>
+            )}
             <Link 
               to="/about" 
               className="text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-primary transition-colors"
@@ -75,10 +98,7 @@ export default function Header() {
                   Welcome, {user.name}
                 </span>
                 <button
-                  onClick={() => {
-                    dispatch(logout());
-                    navigate("/");
-                  }}
+                  onClick={handleLogout}
                   className="px-4 py-2 text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-primary transition-colors"
                 >
                   Sign Out
