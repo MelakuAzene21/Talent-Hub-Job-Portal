@@ -17,8 +17,8 @@ export default function RegisterForm() {
 
   const onSubmit = async (data: any) => {
     try {
-      const res = await registerUser(data).unwrap();
-      dispatch(setCredentials(res));
+    const res = await registerUser(data).unwrap();
+    dispatch(setCredentials(res));
       
       // Redirect based on role
       switch (res.user.role) {
@@ -83,7 +83,7 @@ export default function RegisterForm() {
           Password
         </label>
         <div className="relative">
-          <Input 
+      <Input
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             {...register("password", { 
@@ -122,14 +122,14 @@ export default function RegisterForm() {
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
           I am a
         </label>
-        <select
+      <select
           {...register("role", { required: "Please select a role" })}
           className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           defaultValue="applicant"
-        >
+      >
           <option value="applicant">Job Seeker</option>
-          <option value="employer">Employer</option>
-        </select>
+        <option value="employer">Employer</option>
+      </select>
         {errors.role && (
           <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
         )}

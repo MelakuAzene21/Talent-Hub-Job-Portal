@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useGetJobsQuery } from "../features/jobs/jobsApi";
 import { useSaveJobMutation, useUnsaveJobMutation, useGetSavedJobsQuery } from "../features/applications/applicationsApi";
 import Button from "../components/ui/Button";
+import { toast } from "react-hot-toast";
 
 export default function JobDetails() {
   const { id } = useParams();
@@ -31,11 +32,14 @@ export default function JobDetails() {
     try {
       if (isSaved) {
         await unsaveJob({ jobId: id!, applicantId: user.id }).unwrap();
+        toast.success('Job removed from saved jobs');
       } else {
         await saveJob({ jobId: id!, applicantId: user.id }).unwrap();
+        toast.success('Job saved successfully!');
       }
     } catch (error) {
       console.error('Failed to save/unsave job:', error);
+      toast.error('Failed to save/unsave job. Please try again.');
     }
   };
 

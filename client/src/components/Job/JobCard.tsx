@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
 import { useSaveJobMutation, useUnsaveJobMutation, useGetSavedJobsQuery } from "../../features/applications/applicationsApi";
+import { toast } from "react-hot-toast";
 
 interface JobCardProps {
   job: any;
@@ -31,11 +32,14 @@ export default function JobCard({ job, showActions = true }: JobCardProps) {
     try {
       if (isSaved) {
         await unsaveJob({ jobId: job._id, applicantId: user.id }).unwrap();
+        toast.success('Job removed from saved jobs');
       } else {
         await saveJob({ jobId: job._id, applicantId: user.id }).unwrap();
+        toast.success('Job saved successfully!');
       }
     } catch (error) {
       console.error('Failed to save/unsave job:', error);
+      toast.error('Failed to save/unsave job. Please try again.');
     }
   };
 

@@ -4,6 +4,7 @@ import { useCreateApplicationMutation } from "../../features/applications/applic
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../ui/Button";
+import { toast } from "react-hot-toast";
 
 
 export default function ApplicationForm() {
@@ -24,13 +25,13 @@ export default function ApplicationForm() {
       // Validate file type
       const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
       if (!allowedTypes.includes(file.type)) {
-        alert('Please upload a PDF, DOC, or DOCX file');
+        toast.error('Please upload a PDF, DOC, or DOCX file');
         return;
       }
       
       // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        toast.error('File size must be less than 5MB');
         return;
       }
       
@@ -75,11 +76,13 @@ export default function ApplicationForm() {
 
       await createApplication(applicationData).unwrap();
       
+      toast.success('Application submitted successfully!');
+      
       // Redirect to success page or dashboard
       navigate('/applicant?tab=applications');
     } catch (error) {
       console.error('Application submission failed:', error);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Failed to submit application. Please try again.');
     } finally {
       setIsUploading(false);
     }

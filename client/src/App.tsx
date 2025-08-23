@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeAuth } from "./features/auth/authSlice";
 import Header from "./components/Layout/Header";
+import { Toaster } from "react-hot-toast";
 import Footer from "./components/Layout/Footer";
 
 export default function App() {
@@ -44,6 +45,30 @@ export default function App() {
         <Outlet />
       </main>
       <Footer />
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#10B981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#EF4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </div>
   );
 }
