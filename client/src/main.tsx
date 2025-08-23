@@ -14,6 +14,7 @@ import Employer from "./pages/Employer";
 import Applicant from "./pages/Applicant";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
+import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { path: "admin", element: <Admin /> },
       { path: "auth", element: <Auth /> },
     ],
+    errorElement: <NotFound />,
   },
 ]);
 
