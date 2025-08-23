@@ -191,7 +191,7 @@ export default function Employer() {
                         <span>•</span>
                         <span className="text-primary font-medium">
                           {getApplicantCount(job._id)} applicants
-                        </span>
+                </span>
                       </div>
                     </div>
                   </div>
@@ -218,7 +218,7 @@ export default function Employer() {
                   </Button>
                 </div>
               </div>
-            </div>
+      </div>
           ))
         )}
       </div>

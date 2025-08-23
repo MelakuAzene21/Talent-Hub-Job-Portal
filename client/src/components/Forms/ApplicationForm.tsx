@@ -151,8 +151,8 @@ export default function ApplicationForm() {
             </label>
             <div className="border-2 border-dashed border-zinc-300 dark:border-zinc-600 rounded-lg p-6 text-center hover:border-primary dark:hover:border-primary transition-colors">
               <input
-                type="file"
-                accept=".pdf,.doc,.docx"
+          type="file"
+          accept=".pdf,.doc,.docx"
                 onChange={handleFileChange}
                 className="hidden"
                 id="resume-upload"
@@ -171,8 +171,8 @@ export default function ApplicationForm() {
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">
                       {(resumeFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
-                    <button
-                      type="button"
+          <button
+            type="button"
                       onClick={() => setResumeFile(null)}
                       className="text-red-600 dark:text-red-400 text-sm hover:text-red-700 dark:hover:text-red-300"
                     >
@@ -232,11 +232,11 @@ export default function ApplicationForm() {
               onClick={() => navigate(-1)}
               variant="outline"
               className="flex-1 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 py-3"
-            >
-              Cancel
+          >
+            Cancel
             </Button>
-          </div>
-        </form>
+        </div>
+      </form>
       </div>
     </div>
   );

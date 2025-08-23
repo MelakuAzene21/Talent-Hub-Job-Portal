@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useCreateJobMutation, useUpdateJobMutation } from "../../features/jobs/jobsApi";
 import Input from "../ui/Input";
-import Button from "../ui/Button"; 
+import Button from "../ui/Button";
 import Select from "../ui/Select";
 import { useEffect } from "react";
 
@@ -46,7 +46,7 @@ export default function JobForm({ job, onSuccess }: JobFormProps) {
       } else {
         await createJob(jobData).unwrap();
       }
-      reset();
+    reset();
       onSuccess?.();
     } catch (error) {
       console.error("Job submission failed:", error);
@@ -124,7 +124,7 @@ export default function JobForm({ job, onSuccess }: JobFormProps) {
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
             Maximum Salary *
           </label>
-          <Input
+      <Input
             {...register("maxSalary", { 
               required: "Maximum salary is required",
               min: { value: 0, message: "Salary must be positive" }
@@ -152,7 +152,7 @@ export default function JobForm({ job, onSuccess }: JobFormProps) {
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
           Requirements * (one per line)
         </label>
-        <textarea
+      <textarea
           {...register("requirements", { required: "Requirements are required" })}
           rows={4}
           className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-zinc-800 dark:text-white"

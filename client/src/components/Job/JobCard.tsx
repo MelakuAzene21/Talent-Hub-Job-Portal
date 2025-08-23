@@ -199,6 +199,6 @@ export default function JobCard({ job, showActions = true }: JobCardProps) {
           </Button>
         </div>
       )}
-    </div>
+      </div>
   );
 }

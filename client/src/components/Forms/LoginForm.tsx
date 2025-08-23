@@ -31,8 +31,8 @@ export default function LoginForm() {
 
   const onSubmit = async (data: any) => {
     try {
-      const res = await login(data).unwrap();
-      dispatch(setCredentials(res));
+    const res = await login(data).unwrap();
+    dispatch(setCredentials(res));
       
       // Redirect based on role
       switch (res.user.role) {
@@ -82,7 +82,7 @@ export default function LoginForm() {
           Password
         </label>
         <div className="relative">
-          <Input 
+      <Input
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             {...register("password", { required: "Password is required" })}
