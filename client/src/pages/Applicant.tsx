@@ -4,8 +4,9 @@ import { Navigate } from "react-router-dom";
 import ApplicationForm from "../components/Forms/ApplicationForm";
 import JobList from "../components/Job/JobList";
 import { useAppSelector } from "../utils/helpers";
-import { useMyApplicationsQuery } from "../features/applications/applicationsApi";
+import { useMyApplicationsQuery, useGetSavedJobsQuery } from "../features/applications/applicationsApi";
 import { useGetJobsQuery } from "../features/jobs/jobsApi";
+import { toast } from "react-hot-toast";
 
 import Button from "../components/ui/Button";
 
@@ -16,6 +17,7 @@ export default function Applicant() {
   
   const { data: applications } = useMyApplicationsQuery(user?.id || "");
   const { data: allJobs } = useGetJobsQuery();
+  const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "");
 
   if (!user || user.role !== 'applicant') {
     return <Navigate to="/" replace />;
@@ -150,6 +152,16 @@ export default function Applicant() {
               }`}
             >
               Browse Jobs
+            </button>
+            <button
+              onClick={() => setActiveTab("saved")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "saved"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300"
+              }`}
+            >
+              Saved Jobs ({savedJobs?.length || 0})
             </button>
           </nav>
         </div>
@@ -290,6 +302,90 @@ export default function Applicant() {
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Available Jobs</h3>
               <JobList />
+            </div>
+          )}
+
+          {/* Saved Jobs Tab */}
+          {activeTab === "saved" && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Saved Jobs</h3>
+              
+              {savedJobs && savedJobs.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {savedJobs.map((savedJob) => {
+                    const job = savedJob.jobId;
+                    if (!job) return null;
+                    
+                    return (
+                      <div key={savedJob._id} className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-lg transition-shadow">
+                        <div className="flex items-start justify-between mb-4">
+                          <h4 className="text-lg font-semibold text-zinc-900 dark:text-white line-clamp-2">
+                            {job.title}
+                          </h4>
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                            Saved {new Date(savedJob.savedAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4 line-clamp-3">
+                          {job.description}
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {job.skills?.slice(0, 3).map((skill: string, index: number) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-full text-xs"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                          {job.skills && job.skills.length > 3 && (
+                            <span className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
+                              +{job.skills.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                          <span>{job.company}</span>
+                          <span>•</span>
+                          <span>{job.location}</span>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => window.location.href = `/jobs/${job._id}`}
+                            className="flex-1 bg-primary hover:bg-blue-700 text-white text-sm py-2"
+                          >
+                            View Details
+                          </Button>
+                          <Button
+                            onClick={() => window.location.href = `/jobs/${job._id}/apply`}
+                            variant="outline"
+                            className="flex-1 text-sm py-2"
+                          >
+                            Apply Now
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-zinc-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">No saved jobs yet</h3>
+                  <p className="text-zinc-600 dark:text-zinc-400 mb-4">Save interesting jobs to view them here later</p>
+                  <Button onClick={() => setActiveTab("jobs")} className="bg-primary hover:bg-blue-700 text-white">
+                    Browse Jobs
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
