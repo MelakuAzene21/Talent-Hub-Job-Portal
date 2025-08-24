@@ -17,7 +17,9 @@ export default function JobDetails() {
 
   const [saveJob] = useSaveJobMutation();
   const [unsaveJob] = useUnsaveJobMutation();
-  const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "");
+  const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "", {
+    skip: !user?.id
+  });
 
   const isSaved = savedJobs?.some((saved: any) => saved.jobId === id);
   const isEmployer = user?.role === 'employer';

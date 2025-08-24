@@ -15,9 +15,14 @@ export default function Applicant() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   
-  const { data: applications } = useMyApplicationsQuery(user?.id || "");
+  // Only run queries when user is loaded and has an ID
+  const { data: applications } = useMyApplicationsQuery(user?.id || "", {
+    skip: !user?.id
+  });
   const { data: allJobs } = useGetJobsQuery();
-  const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "");
+  const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "", {
+    skip: !user?.id
+  });
 
   if (!user || user.role !== 'applicant') {
     return <Navigate to="/" replace />;

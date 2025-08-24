@@ -23,7 +23,9 @@ export default function Employer() {
   const myJobs = allJobs?.filter(job => job.createdBy?._id === user?.id) || [];
   
   // Get applications for each job
-  const { data: applicationsData } = useMyApplicationsQuery(user?.id || "");
+  const { data: applicationsData } = useMyApplicationsQuery(user?.id || "", {
+    skip: !user?.id
+  });
 
   const filteredJobs = myJobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
