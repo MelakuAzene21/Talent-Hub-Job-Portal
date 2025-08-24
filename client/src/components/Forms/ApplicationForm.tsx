@@ -8,11 +8,14 @@ import { toast } from "react-hot-toast";
 
 
 export default function ApplicationForm() {
-  const { jobId } = useParams();
+  const { id: jobId } = useParams();
   const { user } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Debug: Log jobId when component mounts
+  console.log('ApplicationForm mounted with jobId:', jobId);
   
   const [createApplication, { isLoading }] = useCreateApplicationMutation();
   
@@ -40,6 +43,11 @@ export default function ApplicationForm() {
   };
 
   const onSubmit = async (data: any) => {
+    if (!jobId) {
+      toast.error('Job ID not found. Please try again.');
+      return;
+    }
+
     if (!resumeFile) {
       toast.error('Please upload your resume');
       return;
@@ -216,7 +224,7 @@ export default function ApplicationForm() {
           <div className="flex gap-4 pt-4">
             <Button
               type="submit"
-              disabled={isLoading || isUploading || !resumeFile}
+              disabled={isLoading || isUploading || !resumeFile || !jobId}
               className="flex-1 bg-primary hover:bg-blue-700 text-white py-3"
             >
               {isLoading || isUploading ? (
