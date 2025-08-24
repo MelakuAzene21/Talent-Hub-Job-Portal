@@ -5,6 +5,11 @@ import User from "../models/User";
 
 import { v2 as cloudinary } from "cloudinary";
 
+// Declare global socketService type
+declare global {
+  var socketService: any;
+}
+
 export const applyJob = async (req: any, res: Response) => {
   const { jobId, coverLetter } = req.body;
   const job = await Job.findById(jobId);
@@ -179,6 +184,32 @@ export const updateApplicationStatus = async (req: any, res: Response) => {
     
     // Populate applicant details for response
     await app.populate('applicantId', 'name email');
+    
+    // Send real-time notification to applicant
+    if (global.socketService) {
+      try {
+        const jobTitle = (app.jobId as any).title;
+        const applicantId = String(app.applicantId);
+        const jobId = String(app.jobId);
+        
+        switch (status) {
+          case 'shortlisted':
+            await global.socketService.notifyShortlisted(applicantId, jobId, jobTitle);
+            break;
+          case 'rejected':
+            await global.socketService.notifyRejected(applicantId, jobId, jobTitle);
+            break;
+          case 'hired':
+            await global.socketService.notifyHired(applicantId, jobId, jobTitle);
+            break;
+          default:
+            await global.socketService.notifyApplicationStatusChange(applicantId, jobId, status, jobTitle);
+        }
+      } catch (notificationError) {
+        console.error('Error sending notification:', notificationError);
+        // Don't fail the status update if notification fails
+      }
+    }
     
     res.json({
       message: `Application ${status} successfully`,

@@ -8,18 +8,26 @@ import authRoutes from "./routes/auth.routes";
 import jobRoutes from "./routes/jobs.routes";
 import applicationRoutes from "./routes/applications.routes";
 import savedJobRoutes from "./routes/savedJobs.routes";
+import notificationRoutes from "./routes/notifications.routes";
 import { notFound, errorHandler } from "./middleware/error";
+
 const app = express();
+
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
+
 app.get("/", (_req, res) => res.json({ ok: true, name: "TalentHub API" }));
+
 app.use("/auth", authRoutes);
 app.use("/jobs", jobRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/saved-jobs", savedJobRoutes);
+app.use("/notifications", notificationRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
+
 export default app;

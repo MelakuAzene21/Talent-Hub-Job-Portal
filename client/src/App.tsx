@@ -5,11 +5,15 @@ import { initializeAuth } from "./features/auth/authSlice";
 import Header from "./components/Layout/Header";
 import { Toaster } from "react-hot-toast";
 import Footer from "./components/Layout/Footer";
+import { useSocket } from "./hooks/useSocket";
 
 export default function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state: any) => state.auth);
   const location = useLocation();
+  
+  // Initialize Socket.io connection
+  useSocket();
 
   useEffect(() => {
     dispatch(initializeAuth());

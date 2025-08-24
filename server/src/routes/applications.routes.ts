@@ -15,6 +15,12 @@ import multer from "multer";
 import { cloudinary, hasCloudinaryConfig } from "../config/cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import Application from "../models/Application";
+import Job from "../models/Job"; // Added import for Job model
+
+// Declare global socketService type
+declare global {
+  var socketService: any;
+}
 
 // Extend Request interface to include user
 interface AuthenticatedRequest extends Request {
@@ -116,6 +122,33 @@ router.post(
         coverLetter,
         resumeUrl: req.file.path, // Cloudinary URL
       });
+
+      // Get job details for notification
+      const job = await Job.findById(jobId).populate('createdBy', 'name company');
+      
+      // Send real-time notification to employer
+      if (global.socketService && job) {
+        try {
+          await global.socketService.notifyNewApplication(
+            jobId,
+            String(job.createdBy),
+            {
+              id: app._id,
+              applicantId: app.applicantId,
+              coverLetter: app.coverLetter,
+              resumeUrl: app.resumeUrl,
+              createdAt: app.createdAt,
+              job: {
+                title: job.title,
+                company: job.company
+              }
+            }
+          );
+        } catch (notificationError) {
+          console.error('Error sending notification:', notificationError);
+          // Don't fail the application creation if notification fails
+        }
+      }
       
       res.status(201).json({
         message: "Application submitted successfully",
