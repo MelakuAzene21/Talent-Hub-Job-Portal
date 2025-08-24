@@ -18,15 +18,22 @@ export const applicationsApi = api.injectEndpoints({
       query: (userId) => ({ url: `/applications/${userId}` }),
       providesTags: ["Applications"],
     }),
-    adminStats: builder.query<any, void>({
-      query: () => ({ url: "/applications/admin/stats/all" }),
-    }),
+    // Get applicants for a specific job (employer only)
     getApplicantsForJob: builder.query<any[], string>({
       query: (jobId) => `/applications/job/${jobId}`,
+      providesTags: ["Applications"],
     }),
-    getAdminDashboard: builder.query<any, void>({
-      query: () => "/applications/admin/dashboard",
+    // Get detailed application information
+    getApplicationDetails: builder.query<any, string>({
+      query: (applicationId) => `/applications/details/${applicationId}`,
+      providesTags: ["Applications"],
     }),
+    // Get employer's jobs with applicant counts
+    getEmployerJobsWithApplicants: builder.query<any[], void>({
+      query: () => "/applications/employer/jobs",
+      providesTags: ["Applications"],
+    }),
+    // Update application status
     updateStatus: builder.mutation<any, { id: string; status: string }>({
       query: ({ id, status }) => ({
         url: `/applications/${id}/status`,
@@ -34,6 +41,20 @@ export const applicationsApi = api.injectEndpoints({
         body: { status },
       }),
       invalidatesTags: ["Applications"],
+    }),
+    // Delete application
+    deleteApplication: builder.mutation<any, string>({
+      query: (applicationId) => ({
+        url: `/applications/${applicationId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Applications"],
+    }),
+    adminStats: builder.query<any, void>({
+      query: () => ({ url: "/applications/admin/stats/all" }),
+    }),
+    getAdminDashboard: builder.query<any, void>({
+      query: () => "/applications/admin/dashboard",
     }),
     // Saved jobs functionality
     saveJob: builder.mutation<any, { jobId: string; applicantId: string }>({
@@ -58,10 +79,13 @@ export const {
   useApplyMutation, 
   useCreateApplicationMutation,
   useMyApplicationsQuery, 
+  useGetApplicantsForJobQuery,
+  useGetApplicationDetailsQuery,
+  useGetEmployerJobsWithApplicantsQuery,
+  useUpdateStatusMutation,
+  useDeleteApplicationMutation,
   useAdminStatsQuery,
   useGetAdminDashboardQuery, 
-  useGetApplicantsForJobQuery, 
-  useUpdateStatusMutation,
   useSaveJobMutation,
   useUnsaveJobMutation,
   useGetSavedJobsQuery

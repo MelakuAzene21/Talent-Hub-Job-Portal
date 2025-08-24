@@ -15,6 +15,7 @@ import Applicant from "./pages/Applicant";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import JobApplicants from "./components/Employer/JobApplicants";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: "jobs/:id/apply", element: <ApplicationForm /> },
       { path: "about", element: <About /> },
       { path: "employer", element: <Employer /> },
+      { path: "employer/applicants/:jobId", element: <JobApplicants /> },
       { path: "applicant", element: <Applicant /> },
       { path: "admin", element: <Admin /> },
       { path: "auth", element: <Auth /> },
