@@ -71,6 +71,8 @@ router.post(
       console.log('File:', req.file);
       console.log('User:', req.user);
       console.log('Headers:', req.headers);
+      console.log('JobId type:', typeof jobId, 'Value:', jobId);
+      console.log('CoverLetter type:', typeof coverLetter, 'Value:', coverLetter);
       console.log('=====================================');
       
       // Validate required fields
@@ -89,6 +91,13 @@ router.post(
       if (!applicantId) {
         return res.status(400).json({ 
           message: "User not authenticated" 
+        });
+      }
+      
+      // Validate jobId format (should be a valid MongoDB ObjectId)
+      if (!jobId.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ 
+          message: "Invalid job ID format" 
         });
       }
       
