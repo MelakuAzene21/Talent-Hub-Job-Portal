@@ -7,7 +7,9 @@ import {
   applicantsForJob,
   adminDashboard,
   updateApplicationStatus,
-  
+  getApplicationDetails,
+  getEmployerJobsWithApplicants,
+  deleteApplication,
 } from "../controllers/applications.controller";
 import multer from "multer";
 import { cloudinary, hasCloudinaryConfig } from "../config/cloudinary";
@@ -138,15 +140,36 @@ router.post(
   applyJob
 );
 
+// Get user applications
 router.get("/:userId", auth, userApplications);
-router.get("/admin/stats/all", auth, permit("admin"), adminStats);
+
+// Get applicants for a specific job (employer only)
 router.get("/job/:jobId", auth, permit("employer", "admin"), applicantsForJob);
+
+// Get detailed application information (employer only)
+router.get("/details/:id", auth, permit("employer", "admin"), getApplicationDetails);
+
+// Get employer's jobs with applicant counts
+router.get("/employer/jobs", auth, permit("employer", "admin"), getEmployerJobsWithApplicants);
+
+// Admin routes
+router.get("/admin/stats/all", auth, permit("admin"), adminStats);
 router.get("/admin/dashboard", auth, permit("admin"), adminDashboard);
+
+// Update application status (employer/admin only)
 router.put(
   "/:id/status",
   auth,
   permit("employer", "admin"),
   updateApplicationStatus
+);
+
+// Delete application (employer/admin only)
+router.delete(
+  "/:id",
+  auth,
+  permit("employer", "admin"),
+  deleteApplication
 );
 
 export default router;
