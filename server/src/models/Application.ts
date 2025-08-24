@@ -25,4 +25,7 @@ const applicationSchema = new Schema<IApplication>(
   { timestamps: true }
 );
 
+// Add compound index to prevent duplicate applications
+applicationSchema.index({ jobId: 1, applicantId: 1 }, { unique: true });
+
 export default model<IApplication>("Application", applicationSchema);
