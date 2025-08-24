@@ -5,8 +5,13 @@ export const applicationsApi = api.injectEndpoints({
     apply: builder.mutation<any, FormData>({
       query: (form) => ({ url: "/applications", method: "POST", body: form }),
     }),
-    createApplication: builder.mutation<any, any>({
-      query: (data) => ({ url: "/applications/create", method: "POST", body: data }),
+    createApplication: builder.mutation<any, FormData>({
+      query: (formData) => ({ 
+        url: "/applications/create", 
+        method: "POST", 
+        body: formData,
+        // Don't set Content-Type header for FormData, let the browser set it with boundary
+      }),
       invalidatesTags: ["Applications"],
     }),
     myApplications: builder.query<any[], string>({

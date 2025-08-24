@@ -39,19 +39,9 @@ export default function ApplicationForm() {
     }
   };
 
-  const uploadResume = async (file: File): Promise<string> => {
-    // For now, we'll simulate file upload
-    // In production, you'd upload to Cloudinary or similar service
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(`https://example.com/resumes/${file.name}`);
-      }, 1000);
-    });
-  };
-
   const onSubmit = async (data: any) => {
     if (!resumeFile) {
-      alert('Please upload your resume');
+      toast.error('Please upload your resume');
       return;
     }
 
@@ -63,26 +53,34 @@ export default function ApplicationForm() {
     try {
       setIsUploading(true);
       
-      // Upload resume
-      const resumeUrl = await uploadResume(resumeFile);
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('resume', resumeFile);
+      formData.append('jobId', jobId!);
+      formData.append('coverLetter', data.coverLetter);
       
-      // Create application
-      const applicationData = {
-        jobId,
-        applicantId: user.id,
-        coverLetter: data.coverLetter,
-        resumeUrl,
-      };
-
-      await createApplication(applicationData).unwrap();
+      console.log('=== CLIENT SIDE DEBUG ===');
+      console.log('JobId:', jobId);
+      console.log('Cover Letter:', data.coverLetter);
+      console.log('Resume File:', resumeFile);
+      console.log('FormData entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      console.log('User:', user);
+      console.log('========================');
+      
+      // Submit application with file
+      await createApplication(formData).unwrap();
       
       toast.success('Application submitted successfully!');
       
       // Redirect to success page or dashboard
       navigate('/applicant?tab=applications');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Application submission failed:', error);
-      toast.error('Failed to submit application. Please try again.');
+      const errorMessage = error?.data?.message || 'Failed to submit application. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
     }
