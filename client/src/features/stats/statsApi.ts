@@ -6,6 +6,15 @@ export const statsApi = api.injectEndpoints({
       query: () => "/stats/public",
       // Cache for 5 minutes since this data doesn't change frequently
       keepUnusedDataFor: 300,
+      // Add error handling
+      async onQueryStarted(_, { queryFulfilled }) {
+        try {
+          const result = await queryFulfilled;
+          console.log('✅ Stats fetched successfully:', result.data);
+        } catch (error) {
+          console.error('❌ Failed to fetch stats:', error);
+        }
+      },
     }),
   }),
 });

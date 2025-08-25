@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, Navigate } from "react-router-dom";
 import JobForm from "../components/Forms/JobForm";
 import { useGetJobsQuery, useDeleteJobMutation } from "../features/jobs/jobsApi";
-import { useMyApplicationsQuery } from "../features/applications/applicationsApi";
+import { useGetEmployerJobsWithApplicantsQuery } from "../features/applications/applicationsApi";
 
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -19,13 +19,13 @@ export default function Employer() {
   const { data: allJobs, refetch } = useGetJobsQuery();
   const [deleteJob] = useDeleteJobMutation();
   
-  // Filter jobs created by this employer
-  const myJobs = allJobs?.filter(job => job.createdBy?._id === user?.id) || [];
-  
-  // Get applications for each job
-  const { data: applicationsData } = useMyApplicationsQuery(user?.id || "", {
+  // Get employer jobs with applicant counts
+  const { data: employerJobsData, refetch: refetchEmployerJobs } = useGetEmployerJobsWithApplicantsQuery(undefined, {
     skip: !user?.id
   });
+  
+  // Filter jobs created by this employer
+  const myJobs = allJobs?.filter(job => job.createdBy?._id === user?.id) || [];
 
   const filteredJobs = myJobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,6 +36,7 @@ export default function Employer() {
     if (window.confirm("Are you sure you want to delete this job?")) {
       await deleteJob(jobId);
       refetch();
+      refetchEmployerJobs();
     }
   };
 
@@ -50,7 +51,9 @@ export default function Employer() {
   };
 
   const getApplicantCount = (jobId: string) => {
-    return applicationsData?.filter(app => app.jobId === jobId).length || 0;
+    if (!employerJobsData) return 0;
+    const jobData = employerJobsData.find(job => job._id === jobId);
+    return jobData?.applicantCount || 0;
   };
 
   if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
@@ -129,12 +132,12 @@ export default function Employer() {
                   <div>
                     <p className="text-zinc-600 dark:text-zinc-400 text-sm">Total Applications</p>
                     <p className="text-3xl font-bold text-zinc-900 dark:text-white">
-                      {applicationsData?.length || 0}
+                      {employerJobsData?.reduce((total, job) => total + (job.applicantCount || 0), 0) || 0}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                     <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                      <path fillRule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
@@ -145,62 +148,46 @@ export default function Employer() {
                   <div>
                     <p className="text-zinc-600 dark:text-zinc-400 text-sm">Active Jobs</p>
                     <p className="text-3xl font-bold text-zinc-900 dark:text-white">
-                      {myJobs.filter(job => new Date(job.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}
+                      {myJobs.filter(job => job.isActive !== false).length}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
                     <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
-                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
-                  Quick Actions
-                </h3>
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => setShowJobForm(true)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    + Post New Job
-                  </Button>
-                  <Button
-                    onClick={() => setActiveTab("jobs")}
-                    variant="outline"
-                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                  >
-                    Manage Existing Jobs
-                  </Button>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
-                <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-3">
-                  Recent Activity
-                </h3>
-                <div className="space-y-2 text-sm">
-                  {myJobs.slice(0, 3).map((job) => (
-                    <div key={job._id} className="flex items-center justify-between">
-                      <span className="text-green-800 dark:text-green-200 truncate">
-                        {job.title}
-                      </span>
-                      <span className="text-green-600 dark:text-green-400">
-                        {getApplicantCount(job._id)} apps
-                      </span>
+            {/* Recent Jobs */}
+            <div className="bg-zinc-50 dark:bg-zinc-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Recent Job Postings</h3>
+              <div className="space-y-4">
+                {myJobs.slice(0, 3).map((job) => (
+                  <div key={job._id} className="flex items-center justify-between p-4 bg-white dark:bg-zinc-700 rounded-lg border border-zinc-200 dark:border-zinc-600">
+                    <div>
+                      <h4 className="font-medium text-zinc-900 dark:text-white">{job.title}</h4>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">{job.company}</p>
                     </div>
-                  ))}
-                  {myJobs.length === 0 && (
-                    <p className="text-green-600 dark:text-green-400 text-sm">
-                      No jobs posted yet
-                    </p>
-                  )}
-                </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {getApplicantCount(job._id)} applicants
+                      </span>
+                      <Button
+                        onClick={() => navigate(`/employer/applicants/${job._id}`)}
+                        className="bg-primary hover:bg-blue-700 text-white text-sm px-3 py-1"
+                      >
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                {myJobs.length === 0 && (
+                  <p className="text-center text-zinc-600 dark:text-zinc-400 py-8">
+                    No jobs posted yet
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -221,7 +208,10 @@ export default function Employer() {
                     className="w-64"
                   />
                   <Button
-                    onClick={() => refetch()}
+                    onClick={() => {
+                      refetch();
+                      refetchEmployerJobs();
+                    }}
                     className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
                   >
                     Refresh
@@ -331,6 +321,7 @@ export default function Employer() {
               onSuccess={() => {
                 handleCloseForm();
                 refetch();
+                refetchEmployerJobs();
               }}
             />
           </div>
