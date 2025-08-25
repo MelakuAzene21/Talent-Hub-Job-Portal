@@ -9,6 +9,7 @@ import jobRoutes from "./routes/jobs.routes";
 import applicationRoutes from "./routes/applications.routes";
 import savedJobRoutes from "./routes/savedJobs.routes";
 import notificationRoutes from "./routes/notifications.routes";
+import statsRoutes from "./routes/stats.routes";
 import { notFound, errorHandler } from "./middleware/error";
 
 const app = express();
@@ -26,6 +27,7 @@ app.use("/jobs", jobRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/saved-jobs", savedJobRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/stats", statsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
