@@ -129,9 +129,28 @@ router.post(
       // Send real-time notification to employer
       if (global.socketService && job) {
         try {
+          // Extract just the employer ID, not the entire user object
+          const employerId = String(job.createdBy);
+          
+          console.log('Sending new application notification with data:', {
+            jobId,
+            employerId,
+            applicationData: {
+              id: app._id,
+              applicantId: app.applicantId,
+              coverLetter: app.coverLetter,
+              resumeUrl: app.resumeUrl,
+              createdAt: app.createdAt,
+              job: {
+                title: job.title,
+                company: job.company
+              }
+            }
+          });
+          
           await global.socketService.notifyNewApplication(
             jobId,
-            String(job.createdBy),
+            employerId,
             {
               id: app._id,
               applicantId: app.applicantId,

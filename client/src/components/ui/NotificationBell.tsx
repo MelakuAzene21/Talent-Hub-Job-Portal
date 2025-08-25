@@ -3,14 +3,15 @@ import { useSelector } from 'react-redux';
 import { useGetNotificationCountQuery, useGetUserNotificationsQuery, useMarkNotificationAsReadMutation, useMarkAllNotificationsAsReadMutation } from '../../features/notifications/notificationsApi';
 import { toast } from 'react-hot-toast';
 import Button from './Button';
+import socketService from '../../services/socket';
 
 export default function NotificationBell() {
   const { user } = useSelector((state: any) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   
-  const { data: countData } = useGetNotificationCountQuery();
-  const { data: notificationsData } = useGetUserNotificationsQuery({
+  const { data: countData, refetch: refetchCount } = useGetNotificationCountQuery();
+  const { data: notificationsData, refetch: refetchNotifications } = useGetUserNotificationsQuery({
     page: 1,
     limit: 10,
     unreadOnly: showUnreadOnly
@@ -22,10 +23,99 @@ export default function NotificationBell() {
   const unreadCount = countData?.unreadCount || 0;
   const notifications = notificationsData?.notifications || [];
 
+  // Listen for real-time notifications
+  useEffect(() => {
+    if (!user) return;
+
+    // Listen for new application notifications
+    const handleNewApplication = (data: any) => {
+      console.log('📨 Real-time: New application notification received:', data);
+      toast.success(`New application received for ${data.job?.title || 'your job posting'}`, {
+        duration: 5000,
+        position: 'top-right'
+      });
+      // Refresh notifications from database
+      refetchCount();
+      refetchNotifications();
+    };
+
+    // Listen for application status change notifications
+    const handleStatusChange = (data: any) => {
+      console.log('📨 Real-time: Status change notification received:', data);
+      toast.success(`Application status updated: ${data.status}`, {
+        duration: 5000,
+        position: 'top-right'
+      });
+      // Refresh notifications from database
+      refetchCount();
+      refetchNotifications();
+    };
+
+    // Listen for shortlisted notifications
+    const handleShortlisted = (data: any) => {
+      console.log('📨 Real-time: Shortlisted notification received:', data);
+      toast.success(`🎉 Congratulations! You've been shortlisted for ${data.jobTitle}`, {
+        duration: 8000,
+        position: 'top-right'
+      });
+      // Refresh notifications from database
+      refetchCount();
+      refetchNotifications();
+    };
+
+    // Listen for rejected notifications
+    const handleRejected = (data: any) => {
+      console.log('📨 Real-time: Rejected notification received:', data);
+      toast.error(`Application for ${data.jobTitle} was not selected`, {
+        duration: 8000,
+        position: 'top-right'
+      });
+      // Refresh notifications from database
+      refetchCount();
+      refetchNotifications();
+    };
+
+    // Listen for hired notifications
+    const handleHired = (data: any) => {
+      console.log('📨 Real-time: Hired notification received:', data);
+      toast.success(`🎊 Congratulations! You've been hired for ${data.jobTitle}!`, {
+        duration: 10000,
+        position: 'top-right'
+      });
+      // Refresh notifications from database
+      refetchCount();
+      refetchNotifications();
+    };
+
+    // Add event listeners to socket service
+    const socket = socketService.getSocket();
+    if (socket) {
+      socket.on('new_application', handleNewApplication);
+      socket.on('application_status_change', handleStatusChange);
+      socket.on('shortlisted', handleShortlisted);
+      socket.on('rejected', handleRejected);
+      socket.on('hired', handleHired);
+    }
+
+    // Cleanup event listeners
+    return () => {
+      if (socket) {
+        socket.off('new_application', handleNewApplication);
+        socket.off('application_status_change', handleStatusChange);
+        socket.off('shortlisted', handleShortlisted);
+        socket.off('rejected', handleRejected);
+        socket.off('hired', handleHired);
+      }
+    };
+  }, [user, refetchCount, refetchNotifications]);
+
   const handleMarkAsRead = async (id: string) => {
     try {
       await markAsRead(id).unwrap();
       toast.success('Notification marked as read');
+      // Refresh the count and notifications
+      refetchCount();
+      refetchNotifications();
     } catch (error) {
       toast.error('Failed to mark notification as read');
     }
@@ -35,6 +125,9 @@ export default function NotificationBell() {
     try {
       await markAllAsRead().unwrap();
       toast.success('All notifications marked as read');
+      // Refresh the count and notifications
+      refetchCount();
+      refetchNotifications();
     } catch (error) {
       toast.error('Failed to mark all notifications as read');
     }
@@ -187,3 +280,4 @@ export default function NotificationBell() {
     </div>
   );
 }
+
