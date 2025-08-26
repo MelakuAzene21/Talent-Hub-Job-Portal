@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { store } from "../../app/store";
 import { logout } from "../../features/auth/authSlice";
@@ -10,14 +11,16 @@ export default function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -75,30 +78,114 @@ export default function Header() {
             {/* Notification Bell */}
             {user && <NotificationBell />}
 
+            {/* Mobile menu button */}
+            <button
+              className="inline-flex items-center justify-center md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label="Open main menu"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            >
+              {isMobileMenuOpen ? (
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+
             {/* User Menu */}
+            <div className="hidden md:flex">
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                    Welcome, {user.name}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex space-x-4">
+                  <Link
+                    to="/auth?mode=login"
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/auth?mode=register"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu panel */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+          <div className="px-4 pt-2 pb-4 space-y-2">
+            <Link
+              to="/jobs"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Jobs
+            </Link>
+            {user?.role === "employer" && (
+              <Link
+                to="/employer"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                Employer Dashboard
+              </Link>
+            )}
+            {user?.role === "applicant" && (
+              <Link
+                to="/applicant"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                My Applications
+              </Link>
+            )}
+
+            <div className="pt-2 border-t border-gray-200 dark:border-gray-800" />
+
             {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Welcome, {user.name}
-                </span>
+              <div className="space-y-2">
+                <div className="px-3 text-sm text-gray-600 dark:text-gray-400">Signed in as</div>
+                <div className="px-3 text-base font-medium text-gray-900 dark:text-gray-100">{user.name}</div>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-base font-medium transition-colors"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <div className="flex space-x-4">
+              <div className="grid grid-cols-2 gap-3">
                 <Link
                   to="/auth?mode=login"
-                  className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded-md text-base font-medium"
                 >
                   Login
                 </Link>
                 <Link
                   to="/auth?mode=register"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-base font-medium"
                 >
                   Register
                 </Link>
@@ -106,7 +193,7 @@ export default function Header() {
             )}
           </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }
