@@ -67,7 +67,7 @@ export class SocketService {
   }
 
   // Helper function to save notification to database
-  private async saveNotification(recipientId: string, type: string, title: string, message: string, metadata: any = {}) {
+  private async saveNotification(recipientId: string | any, type: string, title: string, message: string, metadata: any = {}) {
     try {
       // Extract just the ID if recipientId is an object
       let actualRecipientId = recipientId;
