@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 export const env = {
   PORT: process.env.PORT || 5000,
-  MONGO_URI: process.env.MONGO_URI || "mongodb://localhost:27017/talenthub",
+  MONGO_URI: process.env.MONGO_URI,
   JWT_SECRET: process.env.JWT_SECRET || "default_jwt_secret_change_in_production",
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
   CLOUDINARY: {

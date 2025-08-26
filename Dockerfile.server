@@ -1,0 +1,23 @@
+# Node.js server with TypeScript
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY server/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY server/ ./
+
+# Build TypeScript
+RUN npm run build
+
+# Expose port 5000
+EXPOSE 5000
+
+# Start the server
+CMD ["npm", "start"]
