@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
-import { useSaveJobMutation, useUnsaveJobMutation, useGetSavedJobsQuery } from "../../features/applications/applicationsApi";
+import { useSaveJobMutation, useUnsaveJobMutation, useGetSavedJobsQuery, useCheckIfAppliedQuery } from "../../features/applications/applicationsApi";
 import { toast } from "react-hot-toast";
 
 interface JobCardProps {
@@ -17,10 +17,16 @@ export default function JobCard({ job, showActions = true }: JobCardProps) {
   
   const [saveJob] = useSaveJobMutation();
   const [unsaveJob] = useUnsaveJobMutation();
-  const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "", {
+    const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "", {
     skip: !user?.id
   });
-
+  
+  // Check if user has already applied to this job
+  const { data: hasApplied } = useCheckIfAppliedQuery(
+    { jobId: job._id, applicantId: user?.id || "" },
+    { skip: !user?.id }
+  );
+  
   const isSaved = savedJobs?.some((saved: any) => saved.jobId === job._id);
   const isEmployer = user?.role === 'employer';
   const isApplicant = user?.role === 'applicant';
@@ -173,12 +179,26 @@ export default function JobCard({ job, showActions = true }: JobCardProps) {
         <div className="flex gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
           {isApplicant && (
             <>
-              <Button
-                onClick={handleApply}
-                className="flex-1 bg-primary hover:bg-blue-700 text-white font-medium"
-              >
-                Apply Now
-              </Button>
+              {hasApplied ? (
+                <div className="flex-1">
+                  <Button
+                    className="w-full bg-green-600 text-white font-medium cursor-not-allowed"
+                    disabled
+                  >
+                    ✓ Applied
+                  </Button>
+                  <p className="text-xs text-green-600 dark:text-green-400 text-center mt-1">
+                    Application submitted
+                  </p>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleApply}
+                  className="flex-1 bg-primary hover:bg-blue-700 text-white font-medium"
+                >
+                  Apply Now
+                </Button>
+              )}
               <Button
                 onClick={handleSaveJob}
                 variant={isSaved ? "outline" : "secondary"}

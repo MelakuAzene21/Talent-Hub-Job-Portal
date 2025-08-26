@@ -72,6 +72,11 @@ export const applicationsApi = api.injectEndpoints({
       query: (applicantId) => `/saved-jobs/${applicantId}`,
       providesTags: ["SavedJobs"],
     }),
+    // Check if user has already applied to a specific job
+    checkIfApplied: builder.query<boolean, { jobId: string; applicantId: string }>({
+      query: ({ jobId, applicantId }) => `/applications/check/${jobId}/${applicantId}`,
+      providesTags: ["Applications"],
+    }),
   }),
 });
 
@@ -88,5 +93,6 @@ export const {
   useGetAdminDashboardQuery, 
   useSaveJobMutation,
   useUnsaveJobMutation,
-  useGetSavedJobsQuery
+  useGetSavedJobsQuery,
+  useCheckIfAppliedQuery
 } = applicationsApi;

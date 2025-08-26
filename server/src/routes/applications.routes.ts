@@ -198,6 +198,31 @@ router.get("/:userId", auth, userApplications);
 // Get applicants for a specific job (employer only)
 router.get("/job/:jobId", auth, permit("employer", "admin"), applicantsForJob);
 
+// Check if user has already applied to a specific job
+router.get("/check/:jobId/:applicantId", auth, permit("applicant", "admin"), async (req: AuthenticatedRequest, res) => {
+  try {
+    const { jobId, applicantId } = req.params;
+    
+    // Validate that the authenticated user is checking their own application
+    if (req.user?.id !== applicantId && req.user?.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    
+    // Validate jobId format
+    if (!jobId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid job ID format" });
+    }
+    
+    // Check if application exists
+    const existing = await Application.findOne({ jobId, applicantId });
+    
+    res.json({ hasApplied: !!existing });
+  } catch (error) {
+    console.error('Error checking application status:', error);
+    res.status(500).json({ message: "Failed to check application status" });
+  }
+});
+
 // Get detailed application information (employer only)
 router.get("/details/:id", auth, permit("employer", "admin"), getApplicationDetails);
 

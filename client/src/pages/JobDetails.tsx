@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGetJobsQuery } from "../features/jobs/jobsApi";
-import { useSaveJobMutation, useUnsaveJobMutation, useGetSavedJobsQuery } from "../features/applications/applicationsApi";
+import { useSaveJobMutation, useUnsaveJobMutation, useGetSavedJobsQuery, useCheckIfAppliedQuery } from "../features/applications/applicationsApi";
 import Button from "../components/ui/Button";
 import { toast } from "react-hot-toast";
 
@@ -20,6 +20,12 @@ export default function JobDetails() {
   const { data: savedJobs } = useGetSavedJobsQuery(user?.id || "", {
     skip: !user?.id
   });
+  
+  // Check if user has already applied to this job
+  const { data: hasApplied } = useCheckIfAppliedQuery(
+    { jobId: id!, applicantId: user?.id || "" },
+    { skip: !user?.id || !id }
+  );
 
   const isSaved = savedJobs?.some((saved: any) => saved.jobId === id);
   const isEmployer = user?.role === 'employer';
@@ -155,12 +161,26 @@ export default function JobDetails() {
           <div className="flex flex-col gap-3">
             {isApplicant && (
               <>
-                <Button
-                  onClick={handleApply}
-                  className="bg-primary hover:bg-blue-700 text-white px-6 py-3"
-                >
-                  Apply Now
-                </Button>
+                                 {hasApplied ? (
+                   <div className="space-y-2">
+                     <Button
+                       className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 cursor-not-allowed"
+                       disabled
+                     >
+                       ✓ Already Applied
+                     </Button>
+                     <p className="text-sm text-green-600 dark:text-green-400 text-center">
+                       Your application has been submitted successfully
+                     </p>
+                   </div>
+                 ) : (
+                   <Button
+                     onClick={handleApply}
+                     className="bg-primary hover:bg-blue-700 text-white px-6 py-3"
+                   >
+                     Apply Now
+                   </Button>
+                 )}
                 <Button
                   onClick={handleSaveJob}
                   variant={isSaved ? "secondary" : "outline"}

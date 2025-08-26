@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useCreateApplicationMutation } from "../../features/applications/applicationsApi";
+import { useCreateApplicationMutation, useCheckIfAppliedQuery } from "../../features/applications/applicationsApi";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../ui/Button";
@@ -14,6 +14,12 @@ export default function ApplicationForm() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   
+  // Check if user has already applied to this job
+  const { data: hasApplied, isLoading: isCheckingApplication } = useCheckIfAppliedQuery(
+    { jobId: jobId!, applicantId: user?.id || "" },
+    { skip: !user?.id || !jobId }
+  );
+  
   // Debug: Log jobId when component mounts
   console.log('ApplicationForm mounted with jobId:', jobId);
   
@@ -21,6 +27,14 @@ export default function ApplicationForm() {
   
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
   const coverLetter = watch("coverLetter");
+
+  // Redirect if already applied
+  useEffect(() => {
+    if (hasApplied) {
+      toast.error('You have already applied to this job');
+      navigate('/applicant?tab=applications');
+    }
+  }, [hasApplied, navigate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,7 +102,14 @@ export default function ApplicationForm() {
     } catch (error: any) {
       console.error('Application submission failed:', error);
       const errorMessage = error?.data?.message || 'Failed to submit application. Please try again.';
-      toast.error(errorMessage);
+      
+      // Special handling for duplicate application error
+      if (errorMessage.includes('already applied')) {
+        toast.error('You have already applied to this job. Please check your applications.');
+        navigate('/applicant?tab=applications');
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsUploading(false);
     }
@@ -107,6 +128,20 @@ export default function ApplicationForm() {
         <Button onClick={() => navigate('/auth')} className="bg-primary hover:bg-blue-700 text-white">
           Sign In
         </Button>
+      </div>
+    );
+  }
+
+  // Show loading state while checking application status
+  if (isCheckingApplication) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-zinc-600 dark:text-zinc-400">Checking application status...</p>
+          </div>
+        </div>
       </div>
     );
   }
