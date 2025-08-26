@@ -11,8 +11,7 @@ interface ConnectionStatus {
 export class SocketService {
   private socket: Socket | null = null;
   private isConnected: boolean = false;
-  private reconnectAttempts: number = 0;
-  private maxReconnectAttempts: number = 5;
+  
   private authRetryAttempts: number = 0;
   private maxAuthRetries: number = 3;
   public connectionStatus: ConnectionStatus = {
@@ -29,7 +28,6 @@ export class SocketService {
     }
 
     // Reset retry counters
-    this.reconnectAttempts = 0;
     this.authRetryAttempts = 0;
 
     console.log('🔌 Attempting to connect to Socket.io server...');
@@ -152,23 +150,7 @@ export class SocketService {
     });
   }
 
-  private handleReconnect() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-      
-      console.log(`🔄 Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
-      setTimeout(() => {
-        if (this.socket && !this.socket.connected) {
-          this.socket.connect();
-        }
-      }, delay);
-    } else {
-      console.error('❌ Max reconnection attempts reached');
-      this.updateConnectionStatus(false, false, null, 'Max reconnection attempts reached');
-    }
-  }
+  
 
   private handleNewApplicationNotification(data: any) {
     toast.success(`New application received for ${data.job?.title || 'your job posting'}`, {

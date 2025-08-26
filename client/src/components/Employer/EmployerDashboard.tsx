@@ -1,15 +1,15 @@
-import { useState } from "react";
+ 
 import { useGetEmployerJobsWithApplicantsQuery } from "../../features/applications/applicationsApi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
 import Badge from "../ui/Badge";
-import { toast } from "react-hot-toast";
+ 
 
 export default function EmployerDashboard() {
   const { user } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
-  const [selectedJob, setSelectedJob] = useState<string | null>(null);
+ 
   
   const { data: jobs, isLoading, error } = useGetEmployerJobsWithApplicantsQuery();
 
@@ -48,15 +48,7 @@ export default function EmployerDashboard() {
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'applied': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'shortlisted': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'rejected': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      case 'hired': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      default: return 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300';
-    }
-  };
+  
 
   const getStatusCount = (job: any, status: string) => {
     return job.statusCounts?.[status] || 0;

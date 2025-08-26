@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import JobCard from "./JobCard";
 import Input from "../ui/Input";
 import Button from "../ui/Button";

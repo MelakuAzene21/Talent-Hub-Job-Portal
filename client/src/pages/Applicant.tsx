@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import ApplicationForm from "../components/Forms/ApplicationForm";
 import JobList from "../components/Job/JobList";
-import { useAppSelector } from "../utils/helpers";
 import { useMyApplicationsQuery, useGetSavedJobsQuery } from "../features/applications/applicationsApi";
 import { useGetJobsQuery } from "../features/jobs/jobsApi";
-import { toast } from "react-hot-toast";
+ 
 
 import Button from "../components/ui/Button";
 

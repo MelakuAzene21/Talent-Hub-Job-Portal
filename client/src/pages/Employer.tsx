@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, Navigate } from "react-router-dom";
 import JobForm from "../components/Forms/JobForm";

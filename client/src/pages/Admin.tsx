@@ -187,10 +187,10 @@ export default function Admin() {
                 <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4">
                   <h4 className="font-medium text-zinc-900 dark:text-white mb-3">Top Employers</h4>
                   <div className="space-y-2">
-                    {jobs?.reduce((acc, job) => {
+                    {jobs?.reduce((acc: Array<{id: string, name: string, count: number}>, job: any) => {
                       const employerId = job.createdBy?._id;
                       if (employerId) {
-                        const existing = acc.find(item => item.id === employerId);
+                        const existing = acc.find((item: {id: string, name: string, count: number}) => item.id === employerId);
                         if (existing) {
                           existing.count++;
                         } else {
@@ -199,9 +199,9 @@ export default function Admin() {
                       }
                       return acc;
                     }, [] as Array<{id: string, name: string, count: number}>)
-                    .sort((a, b) => b.count - a.count)
+                    .sort((a: {count: number}, b: {count: number}) => b.count - a.count)
                     .slice(0, 5)
-                    .map((employer) => (
+                    .map((employer: {id: string, name: string, count: number}) => (
                       <div key={employer.id} className="flex items-center justify-between text-sm">
                         <span className="text-zinc-600 dark:text-zinc-400">{employer.name}</span>
                         <span className="text-zinc-500 dark:text-zinc-500">{employer.count} jobs</span>

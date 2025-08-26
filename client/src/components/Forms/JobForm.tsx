@@ -11,7 +11,7 @@ interface JobFormProps {
 }
 
 export default function JobForm({ job, onSuccess }: JobFormProps) {
-  const { register, handleSubmit, reset, setValue, watch } = useForm();
+  const { register, handleSubmit, reset, setValue } = useForm();
   const [createJob, { isLoading: isCreating }] = useCreateJobMutation();
   const [updateJob, { isLoading: isUpdating }] = useUpdateJobMutation();
 

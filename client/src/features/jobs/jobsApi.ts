@@ -3,7 +3,7 @@ import { api } from "../../app/api";
 export const jobsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getJobs: builder.query<any[], { q?: string; skills?: string } | void>({
-      query: (params) => ({ url: "/jobs", params }),
+      query: (params) => ({ url: "/jobs", params: params ?? undefined }),
       providesTags: ["Jobs"],
     }),
     createJob: builder.mutation<

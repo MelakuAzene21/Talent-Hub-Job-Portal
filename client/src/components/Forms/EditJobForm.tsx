@@ -16,7 +16,7 @@ export default function EditJobForm({
     data.skills = String(data.skills)
       .split(",")
       .map((s: string) => s.trim());
-    await updateJob({ id: job._id, body: data }).unwrap();
+    await updateJob({ id: job._id, ...data }).unwrap();
     onClose();
   };
   return (

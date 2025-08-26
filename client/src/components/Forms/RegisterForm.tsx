@@ -51,7 +51,7 @@ export default function RegisterForm() {
           className={errors.name ? "border-red-500" : ""}
         />
         {errors.name && (
-          <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+          <p className="text-red-500 text-sm mt-1">{String(errors.name.message || "")}</p>
         )}
       </div>
 
@@ -73,7 +73,7 @@ export default function RegisterForm() {
           className={errors.email ? "border-red-500" : ""}
         />
         {errors.email && (
-          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-red-500 text-sm mt-1">{String(errors.email.message || "")}</p>
         )}
       </div>
 
@@ -113,7 +113,7 @@ export default function RegisterForm() {
           </button>
         </div>
         {errors.password && (
-          <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+          <p className="text-red-500 text-sm mt-1">{String(errors.password.message || "")}</p>
         )}
       </div>
 
@@ -131,7 +131,7 @@ export default function RegisterForm() {
         <option value="employer">Employer</option>
       </select>
         {errors.role && (
-          <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+          <p className="text-red-500 text-sm mt-1">{String(errors.role.message || "")}</p>
         )}
       </div>
 
