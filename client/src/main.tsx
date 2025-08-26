@@ -17,6 +17,15 @@ import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import JobApplicants from "./components/Employer/JobApplicants";
+import CareerAdvice from "./pages/CareerAdvice";
+import ResumeBuilder from "./pages/ResumeBuilder";
+import SalaryGuide from "./pages/SalaryGuide";
+import FindTalent from "./pages/FindTalent";
+import Pricing from "./pages/Pricing";
+import Resources from "./pages/Resources";
+import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +42,16 @@ const router = createBrowserRouter([
       { path: "applicant", element: <Applicant /> },
       { path: "admin", element: <Admin /> },
       { path: "auth", element: <Auth /> },
+      // Footer pages
+      { path: "career-advice", element: <CareerAdvice /> },
+      { path: "resume-builder", element: <ResumeBuilder /> },
+      { path: "salary-guide", element: <SalaryGuide /> },
+      { path: "find-talent", element: <FindTalent /> },
+      { path: "pricing", element: <Pricing /> },
+      { path: "resources", element: <Resources /> },
+      { path: "contact", element: <Contact /> },
+      { path: "privacy", element: <Privacy /> },
+      { path: "terms", element: <Terms /> },
     ],
     errorElement: <NotFound />,
   },
