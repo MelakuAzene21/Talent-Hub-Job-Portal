@@ -140,7 +140,7 @@ router.post(
               applicantId: app.applicantId,
               coverLetter: app.coverLetter,
               resumeUrl: app.resumeUrl,
-              createdAt: app.createdAt,
+              appliedAt: app.appliedAt,
               job: {
                 title: job.title,
                 company: job.company
@@ -156,7 +156,7 @@ router.post(
               applicantId: app.applicantId,
               coverLetter: app.coverLetter,
               resumeUrl: app.resumeUrl,
-              createdAt: app.createdAt,
+              appliedAt: app.appliedAt,
               job: {
                 title: job.title,
                 company: job.company
