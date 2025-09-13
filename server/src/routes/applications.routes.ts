@@ -32,7 +32,7 @@ interface AuthenticatedRequest extends Request {
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: (req, file) => ({
+  params: (req: any, file: any) => ({
     folder: "talenthub/resumes",
     resource_type: "auto",
     public_id: `${Date.now()}_${file.originalname}`,
