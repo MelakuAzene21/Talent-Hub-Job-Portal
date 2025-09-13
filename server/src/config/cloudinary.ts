@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "cloudinary";
 import { env } from "./env";
 
 // Check if Cloudinary credentials are available
