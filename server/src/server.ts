@@ -22,7 +22,7 @@ connectDB().then(() => {
   (global as any).socketService = socketService;
 
   // ✅ /start command
-  bot.onText(/\/start/, async (msg) => {
+  bot.onText(/\/start/, async (msg: any) => {
     const chatId = msg.chat.id;
 
     bot.sendMessage(
@@ -41,7 +41,7 @@ connectDB().then(() => {
   });
 
   // ✅ Handle Browse Jobs
-  bot.on("callback_query", async (query) => {
+  bot.on("callback_query", async (query: any) => {
     if (!query.message) return;
 
     const chatId = query.message.chat.id;
