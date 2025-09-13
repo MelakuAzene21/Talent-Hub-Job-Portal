@@ -1,4 +1,4 @@
-import cloudinary from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import { env } from "./env";
 
 // Check if Cloudinary credentials are available
@@ -18,4 +18,5 @@ if (hasCloudinaryConfig) {
   console.warn('Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables.');
 }
 
+// Export the cloudinary instance for multer-storage-cloudinary
 export { cloudinary, hasCloudinaryConfig };
