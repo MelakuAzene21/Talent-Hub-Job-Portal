@@ -197,7 +197,7 @@ talenthub/
 └── README.md
 ```
 
-## 🔑 Key Implementations
+## 🔑 Key Implementations /Features
 
 ### Real-Time Notifications
 - **Socket.io** with database persistence
